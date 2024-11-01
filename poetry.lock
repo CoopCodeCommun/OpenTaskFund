@@ -200,6 +200,21 @@ argon2 = ["argon2-cffi (>=19.1.0)"]
 bcrypt = ["bcrypt"]
 
 [[package]]
+name = "django-htmx"
+version = "1.21.0"
+description = "Extensions for using Django with htmx."
+optional = false
+python-versions = ">=3.9"
+files = [
+    {file = "django_htmx-1.21.0-py3-none-any.whl", hash = "sha256:64bc31463017a80552b767bc216ee5700248fa72e7ccd2963495e69afbdb6abe"},
+    {file = "django_htmx-1.21.0.tar.gz", hash = "sha256:6ed3b42effd5980f22e68f36cd14ee4311bff3b6cb8435a89e27f45995691572"},
+]
+
+[package.dependencies]
+asgiref = ">=3.6"
+django = ">=4.2"
+
+[[package]]
 name = "django-rest-framework"
 version = "0.1.0"
 description = "alias."
@@ -569,4 +584,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "cb5d8a53f81f397f162af0aab571adcf99db1ca1e148e9eecbe16349de2f901d"
+content-hash = "19c87b4c7179c529fa7801c8bd938b552823c2461caf0b049c5e0634e9064d4a"

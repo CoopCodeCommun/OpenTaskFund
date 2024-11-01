@@ -1,0 +1,37 @@
+<div class="col">
+    <div class="card h-100">
+        <div class="card-body">
+            <h5 class="card-title">{{ feature.name }}</h5>
+            <p class="card-text">{{ feature.description }}</p>
+
+            <!-- Barre de progression du financement -->
+            <div class="progress mb-3">
+                <div
+                        class="progress-bar"
+                        role="progressbar"
+                        style="width: {{ feature.funding_progress }}%;"
+                        aria-valuenow="{{ feature.funding_progress }}"
+                        aria-valuemin="0"
+                        aria-valuemax="100">
+                    {{ feature.funding_progress|floatformat:1 }}%
+                </div>
+            </div>
+
+            <p class="card-text">
+                <strong>Coût total :</strong> {{ feature.total_cost }} {{ feature.currency }}
+            </p>
+            <p class="card-text">
+                <strong>Financement atteint :</strong> {{ feature.total_funded }} {{ feature.currency }}
+            </p>
+
+            <!-- Bouton pour voir les détails d'une fonctionnalité (chargement dynamique avec HTMX) -->
+            <button
+                    class="btn btn-primary"
+                    hx-get="{% url 'feature_detail' feature.id %}"
+                    hx-target="#feature-detail-{{ feature.id }}"
+                    hx-swap="outerHTML">
+                Voir les détails
+            </button>
+        </div>
+    </div>
+</div>
