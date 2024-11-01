@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Feature List</title>
+    <title>Actions List</title>
     <!-- CSS Bootstrap -->
     <link href="{% static 'css/bootstrap.min.5.3.0.css' %}" rel="stylesheet">
     <!-- HTMX -->
@@ -14,20 +14,14 @@
 <body>
 
 <div class="container py-4">
-    <h1 class="text-center mb-4">Liste des fonctionnalités</h1>
-    {% include 'feature/new.html' %}
+    <h1 class="text-center mb-4">Liste des actions</h1>
     <div class="row row-cols-1 row-cols-md-3 g-4">
-        {% for feature in features %}
-            {% include 'feature/card.html' %}
+        {% for action in actions %}
+            {% include 'action/card.html' %}
         {% empty %}
-        <p>Aucune fonctionnalité trouvée.</p>
+        <p>Aucune actions trouvée.</p>
         {% endfor %}
     </div>
-</div>
-
-<!-- Conteneur pour afficher les détails de la fonctionnalité (HTMX) -->
-<div id="feature-detail-container" class="container py-4">
-    <!-- Contenu chargé dynamiquement ici par HTMX -->
 </div>
 
 <!-- JavaScript Bootstrap -->

@@ -5,11 +5,13 @@ from django.shortcuts import render
 
 # views.py
 from django.shortcuts import render
-from .models import Feature
+from .models import Action
+
 
 def index(request):
     """
-    Vue pour afficher toutes les fonctionnalités dans une liste de cartes.
+    Vue pour afficher toutes les actions dans une liste de cartes.
     """
-    features = Feature.objects.all()  # Récupère toutes les fonctionnalités
-    return render(request, 'index.html', {'features': features})
+    actions = Action.objects.all()  # Récupère toutes les fonctionnalités
+    context = {'actions': actions}
+    return render(request, 'index.html', context)
