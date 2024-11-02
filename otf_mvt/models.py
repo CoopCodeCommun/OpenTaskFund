@@ -26,6 +26,19 @@ class Tag(models.Model):
         return self.name
 
 
+class Currency(models.Model):
+    """
+    Modèle pour représenter les devises utilisées pour le financement des actions.
+    """
+    code = models.CharField(max_length=3, unique=True, help_text=_("Le code ISO de la devise (par exemple, EUR, USD)."))
+    name = models.CharField(max_length=50,
+                            help_text=_("Le nom complet de la devise (par exemple, Euro, Dollar américain)."))
+    symbol = models.CharField(max_length=5, help_text=_("Le symbole de la devise (par exemple, €, $)."))
+
+    def __str__(self):
+        return f"{self.name} ({self.code})"
+
+
 class Action(models.Model):
     """
     Modèle aligné avec Schema.org, pour gérer des actions et sous-actions avec
@@ -39,35 +52,59 @@ class Action(models.Model):
         blank=True,
         help_text=_("La description détaillée de l'action.")
     )
+
+    # Accepter les votes ?
+    accepts_votes = models.BooleanField(
+        default=True,
+        help_text=_("Indique si cette action peut recevoir des votes ou non.")
+    )
+
+    # Peut être financé ?
+
+    can_be_funded = models.BooleanField(
+        default=True,
+        help_text=_("Indique si cette action peut recevoir des financements ou non.")
+    )
+
     target = models.DecimalField(
         max_digits=10,
         decimal_places=2,
         default=0,
         help_text=_("L'objectif financier à atteindre pour cette action.")
     )
+
     total_price_paid = models.DecimalField(
         max_digits=10,
         decimal_places=2,
         default=0,
         help_text=_("Le montant total financé pour cette action jusqu'à présent.")
     )
-    currency = models.CharField(
-        max_length=3,
-        default="EUR",
+
+    currency = models.ForeignKey(
+        Currency,
+        on_delete=models.SET_NULL,
+        related_name="actions",
+        blank=True,
+        null=True,
         help_text=_("La monnaie utilisée pour les transactions financières de cette action.")
     )
+
+    # Gestion du temps
     duration = models.DurationField(
         default=0,
         help_text=_("La durée totale travaillée sur cette action.")
     )
-    parent_action = models.ForeignKey(
+
+    # relation parent / enfant
+    parent = models.ForeignKey(
         'self',
         null=True,
         blank=True,
         on_delete=models.CASCADE,
-        related_name="sub_actions",
+        related_name="children",
         help_text=_("L'action parente de laquelle cette action fait partie, si applicable.")
     )
+
     participants = models.ManyToManyField(
         'Person',
         related_name="participating_actions",
@@ -79,15 +116,20 @@ class Action(models.Model):
         return self.name
 
     @property
+    def total_votes(self):
+        """Calcule le nombre total de votes associés à cette action."""
+        return self.votes.aggregate(total=Sum('vote_value'))['total'] or 0
+
+    @property
     def is_parent(self):
         """Détermine si cette action est une action principale (sans parent)."""
-        return self.parent_action is None
+        return self.parent is None
 
     @property
     def total_price(self):
         """Calcule le coût total en incluant tous les enfants (sous-actions)."""
         return (
-                self.sub_actions.aggregate(total=Sum('target'))['total'] or 0
+                self.children.aggregate(total=Sum('target'))['total'] or 0
         ) + self.target
 
     @property
@@ -101,7 +143,7 @@ class Action(models.Model):
     def aggregate_funded(self):
         """Calcule le financement total en incluant tous les enfants (sous-actions)."""
         return (
-                self.sub_actions.aggregate(total=Sum('total_price_paid'))['total'] or 0
+                self.children.aggregate(total=Sum('total_price_paid'))['total'] or 0
         ) + self.total_price_paid
 
     @property
@@ -114,8 +156,10 @@ class Action(models.Model):
     @property
     def total_duration(self):
         """Calcule la durée totale travaillée, en incluant les sous-actions."""
-        sub_actions_duration = self.sub_actions.aggregate(total=Sum('duration'))['total'] or 0
-        return sub_actions_duration + self.duration
+        children_duration = self.children.aggregate(total=Sum('duration'))['total'] or None
+        if children_duration:
+            return children_duration + self.duration
+        return self.duration
 
     def add_participant(self, user):
         """Ajoute un utilisateur comme participant à cette action."""

@@ -49,7 +49,6 @@ class Command(BaseCommand):
                 description=fake.paragraph(nb_sentences=3),
                 target=fake.random_number(digits=5),
                 total_price_paid=fake.random_number(digits=4),
-                currency='USD',
                 duration=timedelta(days=fake.random_number(digits=3)),
             )
             for person in persons:
@@ -64,9 +63,8 @@ class Command(BaseCommand):
                     description=fake.paragraph(nb_sentences=3),
                     target=fake.random_number(digits=5),
                     total_price_paid=fake.random_number(digits=4),
-                    currency='EUR',
                     duration=timedelta(days=fake.random_number(digits=3)),
-                    parent_action=parent
+                    parent=parent,
                 )
                 for person in persons:
                     sub_action.add_participant(person)

@@ -1,9 +1,11 @@
 # urls.py dans l'application `otf_mvt`
 from django.urls import path
+from rest_framework.routers import DefaultRouter
 from . import views
 
-app_name = 'otf_mvt'
+router = DefaultRouter()
+router.register(r'action', views.ActionViewSet, basename='action')
 
 urlpatterns = [
-    path('', views.index, name='index'),  # Page d'accueil qui affiche les fonctionnalités
-]
+                  path('', views.index, name='index'),  # Page d'accueil qui affiche les fonctionnalités
+              ] + router.urls

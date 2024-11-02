@@ -1,0 +1,50 @@
+<!-- templates/action.html -->
+{% load static humanize %}
+<div class="card">
+    <div class="card-header" id="heading-{{ action.id }}">
+        <h2 class="mb-0">
+            <button class="btn btn-link" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#collapse-{{ action.id }}" aria-expanded="true"
+                    aria-controls="collapse-{{ action.id }}">
+                {{ action.name }}
+            </button>
+        </h2>
+        <ul>
+            {% if action.accepts_votes %}
+                <li>
+                    <button class="btn btn-small btn-dark"
+                            hx-get="/action/{{ action.pk }}/vote" hx-target="this"
+                            hx-swap="outerHTML">
+                        +1
+                    </button>
+                    Votes: {{ action.total_votes }}
+                </li>
+            {% endif %}
+            <li>{{ action.funding_progress|floatformat:0 }}% Financé : {{ action.total_price_paid }}
+                / {{ action.total_price }}</li>
+            <li>Temps engagés : {{ action.total_duration }}</li>
+        </ul>
+        Participants :
+        <ul>
+            {% for person in action.participants.all %}
+                <li>{{ person.name }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div id="collapse-{{ action.id }}" class="collapse" aria-labelledby="heading-{{ action.id }}"
+         data-bs-parent="#{{ parent_accordion_id|default:"actions-accordion" }}">
+        <div class="card-body">
+            {% if action.children.all %}
+                <div class="accordion" id="accordion-{{ action.id }}">
+                    {% for child in action.children.all %}
+                        {% include 'action/action.html' with action=child parent_accordion_id="accordion-"|add:action.id %}
+                    {% endfor %}
+
+                </div>
+            {% else %}
+                <p>Aucune sous-action disponible.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>

@@ -13,17 +13,14 @@
 </head>
 <body>
 
-<div class="container py-4">
-    <h1 class="text-center mb-4">Liste des actions</h1>
-    <div class="row row-cols-1 row-cols-md-3 g-4">
+<div class="container">
+    <h1 class="mt-5">Liste des Actions</h1>
+    <div id="actions-accordion" class="accordion my-3">
         {% for action in actions %}
-            {% include 'action/card.html' %}
-        {% empty %}
-        <p>Aucune actions trouvée.</p>
+            {% include 'action/action.html' %}
         {% endfor %}
     </div>
 </div>
-
 <!-- JavaScript Bootstrap -->
 <script src="{% static 'js/bootstrap.bundle.min.5.0.3.js' %}"></script>
 </body>
